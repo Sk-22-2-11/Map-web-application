@@ -26,3 +26,12 @@ input[type="text"] {
   padding: 0.5rem;
   margin-right: 0.5rem;
 }
+
+#map {
+  height: 400px;
+  margin-bottom: 1rem;
+}
+
+#timeZone {
+  margin-top: 1rem;
+}
