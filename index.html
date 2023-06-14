@@ -35,7 +35,10 @@
 
     <button @click="deleteSelected">Delete Selected</button>
 
-    <div id="timeZone">{{ timeZone }}</div>
+    <div id="timeZone">
+      <div>Time Zone: {{ timeZone }}</div>
+      <div>Local Time: {{ localTime }}</div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
