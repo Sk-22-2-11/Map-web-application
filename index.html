@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,6 +9,7 @@
   <div id="app">
     <button @click="getCurrentLocation">Get Current Location</button>
     <input type="text" v-model="searchQuery" @keyup.enter="searchLocation">
+    <button @click="searchLocation">Search Location</button>
     <div id="map"></div>
     <table>
       <thead>

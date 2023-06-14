@@ -3,6 +3,7 @@ new Vue({
   data: {
     map: null,
     places: [],
+    markers: [],
     searchQuery: '',
     selectedPlaces: [],
     selectAll: false,
@@ -69,41 +70,57 @@ new Vue({
       });
     },
     addMarker(location) {
-      if (!this.map) {
+      /*if (!this.map) {
         this.map = new google.maps.Map(document.getElementById('map'), {
           center: location,
           zoom: 12
         });
-      }
-      new google.maps.Marker({
+      }*/
+      this.map = new google.maps.Map(document.getElementById('map'), {
+          center: location,
+          zoom: 12
+        });
+      const marker = new google.maps.Marker({
         map: this.map,
         position: location
       });
+      this.markers.push(marker);
     },
     toggleSelectAll() {
-      if (this.selectAll) {
+      if (!this.selectAll) {
         this.selectedPlaces = this.places.slice();
       } else {
         this.selectedPlaces = [];
       }
     },
     deleteSelected() {
-      this.places = this.places.filter(place => !this.selectedPlaces.includes(place));
-      this.selectedPlaces.forEach(place => {
-        const marker = this.findMarkerByPlace(place);
+		this.selectAll = false;  
+		this.places = this.places.filter(place => !this.selectedPlaces.includes(place));
+		this.selectedPlaces.forEach(place => {
+       const marker = this.findMarkerByPlace(place);
+     	if (marker) {
         marker.setMap(null);
-      });
-      this.selectedPlaces = [];
-      this.selectAll = false;
+      	}         
+      });  
+  		this.selectedPlaces = []; 
     },
     findMarkerByPlace(place) {
-      const markers = Array.from(this.map.getMarkers());
+      const markers = this.markers;
+      const tolerance = 0.0001;
+
       return markers.find(marker => {
-        const markerLat = marker.getPosition().lat();
-        const markerLng = marker.getPosition().lng();
-        const placeLat = place.geometry.location.lat();
-        const placeLng = place.geometry.location.lng();
-        return markerLat === placeLat && markerLng === placeLng;
+        const markerPosition = marker.getPosition();
+        const markerLat = markerPosition.lat();
+        const markerLng = markerPosition.lng();
+
+        const placePosition = place.geometry.location;
+        const placeLat = placePosition.lat();
+        const placeLng = placePosition.lng();
+
+        const latDiff = Math.abs(markerLat - placeLat);
+        const lngDiff = Math.abs(markerLng - placeLng);
+
+        return latDiff < tolerance && lngDiff < tolerance;
       });
     }
   }
