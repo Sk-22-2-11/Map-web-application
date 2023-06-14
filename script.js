@@ -57,7 +57,9 @@ new Vue({
               const newPlace = {
                 name: place.formatted_address,
                 timezone: timezoneResult.zoneName,
-                localTime: localTime
+                localTime: localTime,
+		plat: lat,
+		plng: lng
               };
               this.places.push(newPlace);
               this.addMarker(place.geometry.location);
@@ -100,26 +102,33 @@ new Vue({
        const marker = this.findMarkerByPlace(place);
      	if (marker) {
         marker.setMap(null);
-      	}         
+      	}
+        else{
+	console.log("no marker!");
+        }       
       });  
   		this.selectedPlaces = []; 
     },
     findMarkerByPlace(place) {
       const markers = this.markers;
-      const tolerance = 0.0001;
+      const tolerance = 0.01;
 
       return markers.find(marker => {
         const markerPosition = marker.getPosition();
         const markerLat = markerPosition.lat();
         const markerLng = markerPosition.lng();
 
-        const placePosition = place.geometry.location;
-        const placeLat = placePosition.lat();
-        const placeLng = placePosition.lng();
+
+        const placeLat = place.plat;
+        const placeLng = place.plng;
 
         const latDiff = Math.abs(markerLat - placeLat);
         const lngDiff = Math.abs(markerLng - placeLng);
-
+	/*
+	console.log(placeLat);
+	console.log(placeLng);
+	console.log(markerLat);
+	console.log(markerLng);*/
         return latDiff < tolerance && lngDiff < tolerance;
       });
     }
