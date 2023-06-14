@@ -1,4 +1,3 @@
-// app.js
 
 new Vue({
   el: '#app',
@@ -6,37 +5,45 @@ new Vue({
     searchQuery: '',
     searchResults: [],
     selectedLocations: [],
-    timeZone: ''
+    timeZone: '',
+    localTime: ''
   },
   methods: {
     getCurrentLocation() {
-      console.log('Getting current location...');
-      // Add your logic for getting the current location here
+      navigator.geolocation.getCurrentPosition(position => {
+        const { latitude, longitude } = position.coords;
+        const location = { lat: latitude, lng: longitude };
+        this.searchResults.push(location);
+        this.getTimeZone(location);
+        this.updateMap();
+      }, error => {
+        console.error('Error getting current location:', error);
+      });
     },
     searchLocation() {
-      console.log('Searching location...');
-      // Add your logic for searching a location here
-    },
-    deleteSelected() {
-      console.log('Deleting selected records...');
-      // Add your logic for deleting selected records here
-    },
-    getTimeZone(location) {
-      console.log(`Fetching time zone for location: ${location}`);
-      axios.get(`https://api.timezonedb.com/v2.1/get-time-zone?key=UBFIO77YZ3MC&format=json&by=position&lat=${location.lat}&lng=${location.lng}`)
+      // Clear previous search results
+      this.searchResults = [];
+      this.selectedLocations = [];
+
+      // Perform search using the searchQuery
+      axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(this.searchQuery)}&key=YOUR_GOOGLE_MAPS_API_KEY`)
         .then(response => {
-          console.log('Time zone response:', response.data);
-          const { zoneName } = response.data;
-          this.timeZone = zoneName;
+          const results = response.data.results;
+          if (results.length > 0) {
+            results.forEach(result => {
+              const { lat, lng } = result.geometry.location;
+              const location = { lat, lng };
+              this.searchResults.push(location);
+            });
+            this.getTimeZone(this.searchResults[this.searchResults.length - 1]);
+            this.updateMap();
+          } else {
+            console.log('No results found.');
+          }
         })
         .catch(error => {
-          console.error('Error fetching time zone:', error);
+          console.error('Error searching for location:', error);
         });
-    }
-  }
-});
-
-function initMap() {
-  console.log('Initializing map...');
-  // Add your map initialization code here
-}
+    },
+    deleteSelected() {
+      this.searchResults = this.searchResults.filter(location => !this.selectedLocations.includes(location));
