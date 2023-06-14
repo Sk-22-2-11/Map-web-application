@@ -1,50 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Location Finder</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Location Search</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
   <div id="app">
-    <h1>Location Finder</h1>
-
-    <div>
-      <button @click="getCurrentLocation">Get Current Location</button>
-      <input type="text" v-model="searchQuery" placeholder="Search for a location" @keyup.enter="searchLocation">
-      <button @click="searchLocation">Search</button>
-    </div>
-
+    <button @click="getCurrentLocation">Get Current Location</button>
+    <input type="text" v-model="searchQuery" @keyup.enter="searchLocation">
     <div id="map"></div>
-
-    <h2>Search Results</h2>
     <table>
       <thead>
         <tr>
-          <th>Select</th>
+          <th><input type="checkbox" v-model="selectAll" @click="toggleSelectAll"></th>
           <th>Location</th>
+          <th>Time Zone</th>
+          <th>Local Time</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(location, index) in searchResults" :key="index">
-          <td><input type="checkbox" v-model="selectedLocations" :value="location"></td>
-          <td>{{ location }}</td>
+        <tr v-for="place in paginatedPlaces" :key="place.name">
+          <td><input type="checkbox" v-model="selectedPlaces" :value="place"></td>
+          <td>{{ place.name }}</td>
+          <td>{{ place.timezone }}</td>
+          <td>{{ place.localTime }}</td>
         </tr>
       </tbody>
     </table>
-
     <button @click="deleteSelected">Delete Selected</button>
-
-    <div id="timeZone">
-      <div>Time Zone: {{ timeZone }}</div>
-      <div>Local Time: {{ localTime }}</div>
-    </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
-  <script src="script.js" defer></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJW6tH9sOIiGlNRXj3jPnGPntN7m1CQ38&libraries=places"></script>
+  <script src="script.js"></script>
 </body>
 </html>
